@@ -5,9 +5,8 @@ let resolution = 5;
 let cols;
 let rows;
 let currentGeneration;
-let chanceOfInfection = 100000;
+let chanceOfInfection = 350000;
 let chanceOfInfectionSpread = 100;
-let chanceOfDoctor = 5000;
 
 function setup(){
   createCanvas(wWidth, wHeight);
@@ -19,8 +18,7 @@ function setup(){
   for(let i = 0; i < cols; i++){
     for(let j = 0; j < rows; j++){
       let inf = floor(random(chanceOfInfection));
-      let doc = floor(random(chanceOfDoctor));
-      let newPair = {state: floor(random(2)), infected:  inf == 33 ? 1:0, doctor: doc == 33 ? 1:0}; //probability if this cell is infected
+      let newPair = {state: floor(random(2)), infected:  inf == 33 ? 1:0}; //probability if this cell is infected
 
       currentGeneration[i][j] = newPair;  //each cell is binary - can be either 1 or 0
     }
@@ -36,21 +34,15 @@ function draw(){
         let x = i*resolution;
         let y = j*resolution;
 
-        if(currentGeneration[i][j].state == 1 && currentGeneration[i][j].infected == 0 && currentGeneration[i][j].doctor == 0)
+        if(currentGeneration[i][j].state == 1 && currentGeneration[i][j].infected == 0)
         {
           fill(255);
           stroke(0);
 
           rect(x,y,resolution-1,resolution-1);
         }
-        else if(currentGeneration[i][j].state == 1 && currentGeneration[i][j].infected == 1 && currentGeneration[i][j].doctor == 0){
+        else if(currentGeneration[i][j].state == 1 && currentGeneration[i][j].infected == 1){
           fill(0,255,0);
-          stroke(0);
-
-          rect(x,y,resolution-1,resolution-1);
-        }
-        else if(currentGeneration[i][j].state == 1 && currentGeneration[i][j].infected == 0 && currentGeneration[i][j].doctor == 1){
-          fill(0,0,255);
           stroke(0);
 
           rect(x,y,resolution-1,resolution-1);
@@ -66,39 +58,36 @@ function draw(){
       for(let j = 0; j < rows; j++){
         let state = currentGeneration[i][j].state;
         let infected = currentGeneration[i][j].infected;
-        let doctor = currentGeneration[i][j].doctor;
 
         let neighborCount = neighborhood(currentGeneration,i,j);
         let isInfected = isNeighborInfected(currentGeneration,i,j);
-        let doctorAround = isNeighborDoctor(currentGeneration,i,j);
 
         //dead cells with 3 neighbors yeilds life
         if(state == 0 && neighborCount == 3){
           //is one of the neighbors infected?
-          if(isInfected == 1 /*&& !doctorAround*/){
-            let pair = {state: 1, infected: 1, doctor: 0};
+          if(isInfected == 1){
+            let pair = {state: 1, infected: 1};
             nextGeneration[i][j] = pair;
           }
-          else if(isInfected == 1/* && doctorAround*/){
-            let pair = {state: 1, infected: 0, doctor: 0};
+          else if(isInfected == 1){
+            let pair = {state: 1, infected: 0};
             nextGeneration[i][j] = pair;
           }
           else{
             let inf = floor(random(chanceOfInfection));
-            let doc = floor(random(chanceOfDoctor));
-            let pair = {state: 1, infected:  inf == 33 ? 1:0, doctor: doc == 33 ? 1:0};
+            let pair = {state: 1, infected:  inf == 33 ? 1:0};
             nextGeneration[i][j] = pair;
           }
         }
         //live cell with more than 3 neighbors, or less than 2 neighbors yields death
         else if(state == 1 && (neighborCount < 2 || neighborCount > 3)){
-          let pair = {state: 0, infected: 0, doctor: 0};
+          let pair = {state: 0, infected: 0};
           nextGeneration[i][j] = pair;
         }
         //else the cell stays the same to the next generation
         else
         {
-          let pair = {state: state, infected: infected, doctor: doctor};
+          let pair = {state: state, infected: infected};
           nextGeneration[i][j] = pair;
         }
       }
