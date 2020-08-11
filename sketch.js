@@ -69,10 +69,6 @@ function draw(){
             let pair = {state: 1, infected: 1};
             nextGeneration[i][j] = pair;
           }
-          else if(isInfected == 1){
-            let pair = {state: 1, infected: 0};
-            nextGeneration[i][j] = pair;
-          }
           else{
             let inf = floor(random(chanceOfInfection));
             let pair = {state: 1, infected:  inf == 33 ? 1:0};
